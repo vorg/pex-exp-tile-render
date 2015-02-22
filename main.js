@@ -40,8 +40,8 @@ Mat4.prototype.frustum = function(l, r, b, t, n, f) {
 
 sys.Window.create({
   settings: {
-    width: 256,
-    height: 256,
+    width: 512,
+    height: 512,
     type: '3d',
     fullscreen: Platform.isBrowser ? true : false
   },
@@ -104,7 +104,7 @@ sys.Window.create({
     var ix = i % n;
     var iy = floor(i / n);
     var x = ix * tw;
-    var y = iy * th;
+    var y = h - iy * th - th;
 
     var gl = this.gl;
 
@@ -127,8 +127,8 @@ sys.Window.create({
     this.tiledCamera.projectionMatrix.frustum(
       left + shift_X * ix,
       left + shift_X * (ix+1),
-      bottom + shift_Y * iy,
-      bottom + shift_Y * (iy+1),
+      bottom + shift_Y * (n - iy - 1),
+      bottom + shift_Y * (n - iy),
       near, far
     );
 
@@ -149,7 +149,7 @@ sys.Window.create({
 
     if (this.tiled) {
       var numTiles = n * n;
-      var tile = this.frame % numTiles;
+      var tile = floor(this.frame/10) % numTiles;
       for(var i=0; i<=tile; i++) {
         if (this.needsRender) {
           glu.clearColorAndDepth(Color.Black);
