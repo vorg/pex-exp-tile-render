@@ -113,13 +113,11 @@ TileRender.prototype.capture = function() {
   if (this.currentTile == this.tiles.length) {
     var g = gm();
     this.tiles.forEach(function(tile, tileIndex) {
-      console.log(tileIndex, tile.offsetX + '+' + tile.offsetY);
       g = g
         .in('-page', '+' + tile.offsetX + '+' + tile.offsetY)
         .in('tiles/' + tileIndex + '.png')
     })
     g = g
-      //.minify()  // Halves the size, 512x512 -> 256x256
       .mosaic()  // Merges the images as a matrix
       .write(path + '/output.png', function (err) {
           if (err) console.log(err);
