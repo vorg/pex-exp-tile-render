@@ -2,7 +2,7 @@
 
 RFC: Tile renderer for [pex](http://vorg.github.io/pex/)
 
-Will render your current sene at N x N windows size resolution, save it into tiles and stitch them together. I sucessfuly rendered 40K images with it.
+Will render your current scene at N x N windows size resolution, save it into tiles and stitch them together. I sucessfuly rendered 40K images with it.
 
 This will become pex-tilerender at some point.
 
