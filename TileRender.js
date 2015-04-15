@@ -35,6 +35,7 @@ function TileRender(opts) {
   this.tileCamera.setFar(this.opts.camera.getFar());
   this.tileCamera.setPosition(this.opts.camera.getPosition());
   this.tileCamera.setTarget(this.opts.camera.getTarget());
+  this.tileCamera.setUp(this.opts.camera.getUp());
 
   var n = this.opts.n;
   var near = this.tileCamera.getNear();
@@ -56,8 +57,8 @@ function TileRender(opts) {
   for(var i=0; i<n*n; i++) {
     var ix = i % n;
     var iy = floor(i / n);
-    var x = ix * tw;
-    var y = h - iy * th - th;
+    var x = Math.floor(ix * tw);
+    var y = Math.floor(h - iy * th - th);
     this.tiles.push({
       ix: ix,
       iy: iy,
