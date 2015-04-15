@@ -23,25 +23,25 @@ var Time = sys.Time;
 var floor = Math.floor;
 var tan = Math.tan;
 var PI = Math.PI;
+var DPI = 1;
 
 sys.Window.create({
   settings: {
-    width: 1280,
-    height: 720,
+    width: 1280 * DPI,
+    height: 720 * DPI,
     type: '3d',
-    fullscreen: Platform.isBrowser ? true : false
+    fullscreen: Platform.isBrowser ? true : false,
+    highdpi: DPI
   },
-  tiled: true,
   needsRender: false,
-  frame: 0,
+  preview: true,
   init: function() {
     this.initGUI();
     this.initScene();
   },
-
   initGUI: function() {
     this.gui = new GUI(this);
-    this.gui.addParam('Tiled', this, 'tiled');
+    this.gui.addParam('Tile preview', this, 'preview');
 
     this.on('keyDown', function(e) {
       if (e.str == ' ') {
@@ -73,9 +73,9 @@ sys.Window.create({
 
     R.range(0, 100).map(function() {
       var m = new Mesh(cube, new Diffuse({ wrap: 1, diffuseColor: Color.Grey }));
-      m.position.x = random.float(-8, 8);
-      m.position.y = random.float(-5, 5);
-      m.position.z = random.float(-1, -4);
+      m.position.x = random.float(-8,  8);
+      m.position.y = random.float(-5,  5);
+      m.position.z = random.float(-2, -4);
       m.rotation.setDirection(random.vec3());
       this.scene.push(m);
     }.bind(this))
@@ -86,30 +86,40 @@ sys.Window.create({
     }.bind(this));
   },
   draw: function() {
-    glu.clearColorAndDepth(Color.Black);
     glu.enableDepthReadAndWrite(true);
-
     if (this.needsRender) {
+      glu.clearColorAndDepth(Color.Black);
+      glu.enableDepthReadAndWrite(true);
       this.needsRender = false;
-      var tileRender = new TileRender({
+      this.tileRender = new TileRender({
         viewport: [0, 0, this.width, this.height],
-        n: 2,
+        n: 6, //image will be 6x bigger
         camera: this.camera,
-        path: 'tiles'
+        path: 'tiles', //folder to save tiles to
+        preview: this.preview
       });
-      var i = 0;
-      while(tileRender.nextTile()) {
-        glu.clearColorAndDepth(Color.Black);
-        glu.enableDepthReadAndWrite(true);
-        var tileCamera = tileRender.getCamera();
-        var tileViewport = tileRender.getViewport();
+      glu.clearColorAndDepth(Color.Black);
+    }
+    if (this.tileRender) {
+      if (this.tileRender.nextTile()) {
+        if (!this.preview) {
+          glu.clearColorAndDepth(Color.Black);
+        }
+        var tileCamera = this.tileRender.getCamera();
+        var tileViewport = this.tileRender.getViewport();
         this.gl.viewport(tileViewport[0], tileViewport[1], tileViewport[2], tileViewport[3]);
         this.drawScene(tileCamera);
-        tileRender.capture();
+        if (!this.preview) {
+          this.tileRender.capture();
+        }
+      }
+      else {
+        this.tileRender = null;
       }
       this.gl.viewport(0, 0, this.width, this.height);
     }
     else {
+      glu.clearColorAndDepth(Color.Black);
       this.drawScene(this.camera);
     }
     this.gui.draw();
